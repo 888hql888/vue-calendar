@@ -1,7 +1,6 @@
 <template>
   <div class="calendar-main">
     <div class="main-view">
-      <!-- 年月 -->
       <div class="header">
         <span @click="preMonth"> ← </span>
         <span class="yearMonth"> 
@@ -12,14 +11,12 @@
         </span>
         <span @click="nextMonth"> → </span>
       </div>
-      <!-- 周几 -->
       <ul class="weekdays">
-        <li v-for="(item,index) in weekDays" :key="index" >{{item}}</li>
+                <li v-for="(item,index) in weekDays" :key="index" >{{item}}</li>
       </ul>
-      <!-- 几号 -->
       <ul class="numdays">
-        <li v-for="(day,index) in daysArr" :key="index">
-          {{day.getDate()}}
+        <li v-for="(item,i) in daysArr" :key="i">
+          {{item.getDate()}}
         </li>
       </ul>
     </div>
@@ -37,56 +34,60 @@ export default {
   data(){
     const date = new Date()
     return{
-      daysArr:[], //存储日历上的numdays 号数
-      currentYear:date.getFullYear(),
-      currentMonth:date.getMonth()+1,
+        currentYear:date.getFullYear(),
+        currentMonth:date.getMonth()+1,
+        daysArr:[], //存储日期的数组
       weekDays:['日','一','二','三','四','五','六']
+
     }
   },
   methods:{
-    initDaysData(curDate){
-      this.daysArr = []
+    initDaysData(cur){
+      this.daysArr = [] //先清空数据
       //以42个小格为准
-      let date = new Date()
-      if(curDate){
-        date = new Date(curDate)
+      if(cur){
+        let date = new Date(cur)
         this.currentYear = date.getFullYear()
         this.currentMonth = date.getMonth()+1
-        this.currentWeek = date.getDay()
       }
-      if(this.currentWeek==0) this.currentWeek = 7
-      let firstDate = new Date(this.formDate(this.currentYear,this.currentMonth,1))
-      let currentWeek = firstDate.getDay()
-      for(let i = currentWeek;i>0;i--){
-        let d = new Date()
-        d.setDate(firstDate.getDate()-i)
+      //计算是周几
+      const {currentYear,currentMonth} = this
+      let firstDate = new Date(this.formData(currentYear,currentMonth,1))
+      let firstWeekDay = firstDate.getDay() //周几
+
+      if(firstWeekDay===0) firstWeekDay = 7
+      //计算前一个月
+      for(let i=firstWeekDay;i>0;i--){
+        let d = new Date(firstDate)
+        d.setDate(d.getDate()-i)
         this.daysArr.push(d)
       }
-      for(let i = 0;i<42-currentWeek;i++){
-        let d = new Date()
-        d.setDate(firstDate.getDate()+i)
+      //计算剩下的天数
+      for(let i=0;i < 42 - firstWeekDay;i++){
+        let d = new Date(firstDate)
+        d.setDate(d.getDate()+i)
         this.daysArr.push(d)
       }
 
-      
+
     },
-    formDate(year,month,day){
-     if(!year || !month || !day) return
-     month = month < 10 ? '0'+month : month
-     day = day < 10 ? '0'+day : day
-     return `${year}/${month}/${day}`
+    formData(y,m,d){
+      m = m < 10 ? '0'+ m : m
+      d = d < 10 ? '0'+ d : d
+      return `${y}/${m}/${d}`
     },
     preMonth(){
       const {currentYear,currentMonth} = this
-      let preDate = new Date(this.formDate(currentYear,currentMonth,1))
-      preDate.setDate(0) //设置上个月
-      this.initDaysData(preDate)
+      let pre = new Date(this.formData(currentYear,currentMonth,1))
+      pre.setDate(0)
+      this.initDaysData(pre)
     },
     nextMonth(){
       const {currentYear,currentMonth} = this
-      let nextDate = new Date(this.formDate(currentYear,currentMonth,1))
-      nextDate.setDate(35) //设置下个月
-      this.initDaysData(nextDate)
+      let nex = new Date(this.formData(currentYear,currentMonth,1))
+      nex.setDate(35)
+      this.initDaysData(nex)
+      console.log('111')
     }
   }
 };
@@ -112,8 +113,11 @@ export default {
       justify-content: space-between;
       border-bottom: 1px solid #e0e0e0;
     }
-    .weekdays , .numdays{
+    .weekdays ,.numdays{
       display: flex;
+    }
+    .numdays{
+      flex-wrap: wrap;
     }
     .weekdays>li , .numdays>li {
         width: 14.2%;
@@ -121,9 +125,6 @@ export default {
         height: 20px;
         line-height: 20px;
         text-align: center;
-    }
-    .numdays {
-      flex-wrap: wrap;
     }
   }
 }

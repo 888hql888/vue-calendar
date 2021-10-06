@@ -1,20 +1,23 @@
 <template>
   <div id="app">
     <!-- <Calendar :activeDay="activeDay" :monthDay="monthDay" /> -->
-    <Calendar2  />
+    <!-- <Calendar2  /> -->
+    <Calendar3  />
     
   </div>
 </template>
 
 <script>
-import Calendar2 from './components/Calendar2.vue'
+// import Calendar2 from './components/Calendar2.vue'
+import Calendar3 from './components/Calendar3.vue'
 // import Calendar from './components/Calendar.vue'
 
 export default {
   name: 'App',
   components: {
     // Calendar,
-    Calendar2
+    // Calendar2,
+    Calendar3
   },
   data(){
     return{
